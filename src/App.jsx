@@ -19,25 +19,37 @@ export default function App() {
 */
 
   const savedActivityKeys = [
-    8364626, 4688012, 6553978, 3699502, 9908721, 3136729, 5490351, 8827573,
-    9318514, 1668223, 3192099, 9008639, 4894697, 8033599, 5675880, 7114122,
-    4151544, 4558850, 3561421, 4286250,
+    "Homer",
+    "Marge",
+    "Bart",
+    "Lisa",
+    "Maggie",
+    "Ned",
+    "Burns",
+    "Krusty",
+    "Milhouse",
+    "Apu",
+    "Chief",
+    "Bob",
+    "Moe",
+    "Ralph",
+    "Comic",
   ];
 
   const [activitiesData, setActivitiesData] = useState([]);
-  // placeHolderData, data klasöründeki placeHolderData.js dosyasından içe aktarılmıştır.
 
   useEffect(() => {
     const apiFetch = async () => {
       try {
         const fetchedData = await Promise.all(
           savedActivityKeys.map(async (key) => {
-            const data = await fetch(
-              `https://bored-api.appbrewery.com/activity/${key}` // Tüm keylere tek tek alır
+            const response = await fetch(
+              `https://thesimpsonsquoteapi.glitch.me/quotes?character=${key}`
             );
-            const res = await data.json(); // API'den gelen JSON verisini al
-            console.log(res);
-            return res; // Veriyi döndür
+            const data = await response.json();
+            return data.length > 0
+              ? data[0]
+              : { quote: "Alıntı bulunamadı", character: key };
           })
         );
         setActivitiesData(fetchedData);
@@ -49,8 +61,13 @@ export default function App() {
   }, []);
 
   const activityCardElements = activitiesData.map((activityData, index) => {
-    const { key, ...otherProps } = activityData;
-    return <ActivityCard key={key} number={index + 1} {...otherProps} />;
+    return (
+      <ActivityCard
+        key={index}
+        number={index + 1}
+        activityData={activityData}
+      />
+    );
   });
 
   return (
